@@ -1,7 +1,24 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {},
+  turbopack: {},
 };
 
-export default nextConfig;
+// Only apply PWA wrapper in production
+let configToExport: NextConfig = nextConfig;
+
+if (process.env.NODE_ENV === 'production') {
+  try {
+    const withPWA = require('next-pwa')({
+      dest: 'public',
+      register: true,
+      skipWaiting: true,
+    });
+    configToExport = withPWA(nextConfig);
+  } catch {
+    configToExport = nextConfig;
+  }
+}
+
+export default configToExport;
