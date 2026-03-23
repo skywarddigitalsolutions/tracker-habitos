@@ -1,10 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { getLocalDateString, formatDateES, getWeekBounds } from '@/lib/utils/dates';
-import { TodayProgress } from '@/components/dashboard/TodayProgress';
-import { HabitList } from '@/components/dashboard/HabitList';
+import { DashboardClient } from '@/components/dashboard/DashboardClient';
 import { DayRatingForm } from '@/components/dashboard/DayRatingForm';
 import { WeeklyStreak } from '@/components/dashboard/WeeklyStreak';
+import { WeeklyNotes } from '@/components/dashboard/WeeklyNotes';
 import { Header } from '@/components/layout/Header';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
@@ -15,6 +15,8 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
+
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
 
   const today = getLocalDateString();
   const todayDate = new Date(today + 'T12:00:00');
@@ -67,8 +69,6 @@ export default async function DashboardPage() {
   const activeHabits = habits ?? [];
   const records = todayRecords ?? [];
 
-  const completedToday = records.filter((r) => r.completed).length;
-
   const streakData = last7.map((date) => {
     const dayRecords = (weekRecords ?? []).filter((r) => r.date === date);
     const dayCompleted = dayRecords.filter((r) => r.completed).length;
@@ -76,49 +76,76 @@ export default async function DashboardPage() {
       (h) => !h.archived_at || h.archived_at > date
     ).length;
     const rate = totalForDay > 0 ? Math.round((dayCompleted / totalForDay) * 100) : 0;
-    const rating = weekRatings?.find((r) => r.date === date)?.rating ?? null;
-    return { date, completionRate: rate, rating };
+    const ratingEntry = weekRatings?.find((r) => r.date === date);
+    return {
+      date,
+      completionRate: rate,
+      rating: ratingEntry?.rating ?? null,
+      notes: ratingEntry?.notes ?? null,
+    };
   });
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-4 space-y-4">
+    <div className="w-full max-w-3xl mx-auto px-5 py-5 space-y-4">
+      {/* Mobile header with CTA */}
       <Header
         action={
           <Link
             href="/habitos/nuevo"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition"
+            aria-label="Crear nuevo hábito"
+            className="flex items-center gap-1.5 px-3 py-2 text-white text-sm font-semibold rounded-xl transition"
+            style={{
+              background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+              boxShadow: '0 0 12px rgba(124,58,237,0.35)',
+              minHeight: '44px',
+            }}
           >
-            <Plus size={14} />
+            <Plus size={14} aria-hidden="true" />
             Nuevo
           </Link>
         }
       />
 
-      {/* Date heading */}
-      <div className="pt-2 pb-1 hidden md:block">
-        <h2 className="text-2xl font-bold text-slate-100">Hoy</h2>
-        <p className="text-slate-400 capitalize">{formattedDate}</p>
+      {/* Desktop heading row — single CTA, no duplicate */}
+      <div className="hidden md:flex items-center justify-between pt-2 pb-1">
+        <div>
+          <p className="text-xs capitalize mb-0.5" style={{ color: 'var(--text-muted)' }}>
+            {formattedDate}
+          </p>
+          <h1
+            className="text-2xl font-bold text-white"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            Inicio
+          </h1>
+        </div>
+        <Link
+          href="/habitos/nuevo"
+          aria-label="Crear nuevo hábito"
+          className="flex items-center gap-2 px-4 py-2.5 text-white text-sm font-semibold rounded-xl transition"
+          style={{
+            background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+            boxShadow: '0 0 14px rgba(124,58,237,0.3)',
+            minHeight: '44px',
+          }}
+        >
+          <Plus size={15} aria-hidden="true" />
+          Nuevo hábito
+        </Link>
       </div>
 
-      <TodayProgress completed={completedToday} total={activeHabits.length} />
+      <DashboardClient
+        habits={activeHabits}
+        initialRecords={records}
+        today={today}
+        userName={profile?.display_name ?? profile?.username ?? undefined}
+      />
 
       <WeeklyStreak data={streakData} />
 
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-slate-200">Hábitos de hoy</h3>
-          <Link
-            href="/habitos/nuevo"
-            className="hidden md:flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300"
-          >
-            <Plus size={12} />
-            Agregar
-          </Link>
-        </div>
-        <HabitList habits={activeHabits} initialRecords={records} today={today} />
-      </div>
-
       <DayRatingForm today={today} initialRating={todayRating ?? null} />
+
+      <WeeklyNotes data={streakData} />
     </div>
   );
 }

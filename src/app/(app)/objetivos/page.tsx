@@ -27,7 +27,7 @@ export default async function ObjetivosPage() {
     return (
       <section className="mb-6">
         <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">{title}</h2>
-        <div className="space-y-3">
+        <div className="flex flex-col gap-4">
           {items.map((goal) => <GoalCard key={goal.id} goal={goal} />)}
         </div>
       </section>

@@ -3,13 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, CheckSquare, BarChart2, Target, Users } from 'lucide-react';
-import { cn } from '@/lib/utils/cn';
 
 const navItems = [
   { href: '/dashboard', label: 'Inicio', icon: Home },
   { href: '/habitos', label: 'Hábitos', icon: CheckSquare },
-  { href: '/estadisticas', label: 'Estadísticas', icon: BarChart2 },
-  { href: '/objetivos', label: 'Objetivos', icon: Target },
+  { href: '/estadisticas', label: 'Stats', icon: BarChart2 },
+  { href: '/objetivos', label: 'Metas', icon: Target },
   { href: '/amigos', label: 'Amigos', icon: Users },
 ];
 
@@ -17,25 +16,64 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-slate-900/95 backdrop-blur-sm border-t border-slate-800">
-      <div className="flex items-center justify-around h-16" style={{ paddingBottom: 'var(--safe-area-bottom)' }}>
+    <nav
+      aria-label="Navegación principal"
+      className="fixed bottom-0 left-0 right-0 z-40 md:hidden"
+      style={{
+        background: 'rgba(8, 8, 14, 0.88)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderTop: '1px solid var(--border)',
+        paddingBottom: 'var(--safe-area-bottom)',
+      }}
+    >
+      <div className="flex items-stretch justify-around" style={{ minHeight: '60px' }}>
         {navItems.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+          const active =
+            pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+
           return (
             <Link
               key={href}
               href={href}
-              className={cn(
-                'flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors',
-                active ? 'text-indigo-400' : 'text-slate-500 hover:text-slate-300'
-              )}
+              aria-current={active ? 'page' : undefined}
+              className="bottom-nav-item flex flex-col items-center justify-center gap-1 flex-1 py-2 relative"
+              style={{ color: active ? 'var(--accent-text)' : 'var(--text-muted)' }}
             >
-              <Icon size={20} strokeWidth={active ? 2.5 : 2} />
-              <span className="text-[10px] font-medium">{label}</span>
+              <span className="relative">
+                <Icon
+                  size={21}
+                  strokeWidth={active ? 2.5 : 2}
+                  aria-hidden="true"
+                />
+                {active && (
+                  <span
+                    className="nav-dot absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded-full"
+                    style={{
+                      width: '18px',
+                      height: '3px',
+                      background: 'var(--accent-text)',
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
+              </span>
+              <span className="text-[10px] font-medium leading-none">{label}</span>
             </Link>
           );
         })}
       </div>
+
+      <style>{`
+        .bottom-nav-item {
+          transition: color 0.2s ease;
+          touch-action: manipulation;
+          min-width: 44px;
+        }
+        .bottom-nav-item:active {
+          opacity: 0.7;
+        }
+      `}</style>
     </nav>
   );
 }

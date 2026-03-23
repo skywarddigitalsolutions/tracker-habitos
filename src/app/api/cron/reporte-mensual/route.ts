@@ -139,17 +139,17 @@ export async function POST(request: Request) {
     </div>
 
     <div class="footer">
-      <p>HábitosPro &mdash; Tu desarrollo personal, cada día</p>
-      <p>Recibís este email porque tenés una cuenta en HábitosPro</p>
+      <p>StoaTrack &mdash; Tu desarrollo personal, cada día</p>
+      <p>Recibís este email porque tenés una cuenta en StoaTrack</p>
     </div>
   </div>
 </body>
 </html>`;
 
       await resend.emails.send({
-        from: 'HábitosPro <noreply@habitospro.com>',
+        from: 'StoaTrack <noreply@habitospro.com>',
         to: user.email,
-        subject: `Tu reporte de ${monthName} ${year} - HábitosPro`,
+        subject: `Tu reporte de ${monthName} ${year} - StoaTrack`,
         html: emailHtml,
       });
 

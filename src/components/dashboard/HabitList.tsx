@@ -8,9 +8,10 @@ interface HabitListProps {
   habits: Habit[];
   initialRecords: HabitRecord[];
   today: string;
+  onToggle?: (wasCompleted: boolean) => void;
 }
 
-export function HabitList({ habits, initialRecords, today }: HabitListProps) {
+export function HabitList({ habits, initialRecords, today, onToggle }: HabitListProps) {
   const [records, setRecords] = useState<Map<string, boolean>>(() => {
     const map = new Map<string, boolean>();
     for (const r of initialRecords) {
@@ -26,6 +27,7 @@ export function HabitList({ habits, initialRecords, today }: HabitListProps) {
     const current = records.get(habitId) ?? false;
 
     // Optimistic update
+    onToggle?.(current);
     setRecords((prev) => {
       const next = new Map(prev);
       next.set(habitId, !current);
@@ -43,6 +45,7 @@ export function HabitList({ habits, initialRecords, today }: HabitListProps) {
       if (json.error) throw new Error(json.error);
     } catch {
       // Revert on error
+      onToggle?.(!current);
       setRecords((prev) => {
         const next = new Map(prev);
         next.set(habitId, current);

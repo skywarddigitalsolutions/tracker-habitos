@@ -11,17 +11,39 @@ interface AppShellProps {
 
 export function AppShell({ children, user }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-slate-950">
-      {/* Desktop sidebar */}
+    <div className="min-h-dvh" style={{ background: 'var(--bg)' }}>
+      {/* Skip to main content — accessibility */}
+      <a href="#main-content" className="skip-link">
+        Saltar al contenido
+      </a>
+
+      {/* Desktop sidebar — fixed, 256px */}
       <Sidebar user={user} />
 
-      {/* Main content */}
-      <main className="md:ml-64 min-h-screen pb-20 md:pb-0">
-        {children}
-      </main>
+      {/* Main layout — CSS grid pushes content right of sidebar on md+ */}
+      <div
+        style={{
+          paddingLeft: 'var(--sidebar-offset, 0)',
+        }}
+      >
+        <main
+          id="main-content"
+          className="pb-24 md:pb-8"
+          style={{ minHeight: '100dvh' }}
+          tabIndex={-1}
+        >
+          {children}
+        </main>
+      </div>
 
       {/* Mobile bottom nav */}
       <BottomNav />
+
+      <style>{`
+        @media (min-width: 768px) {
+          :root { --sidebar-offset: 256px; }
+        }
+      `}</style>
     </div>
   );
 }
