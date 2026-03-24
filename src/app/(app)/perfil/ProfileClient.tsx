@@ -6,14 +6,18 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import type { Profile } from '@/lib/supabase/types';
+import type { BadgeId } from '@/lib/gamification/badges';
+import { XPBar } from '@/components/gamification/XPBar';
+import { BadgesDisplay } from '@/components/gamification/BadgesDisplay';
 import { User, LogOut, Save } from 'lucide-react';
 
 interface ProfileClientProps {
   profile: Profile | null;
   email: string;
+  badgeIds: BadgeId[];
 }
 
-export function ProfileClient({ profile, email }: ProfileClientProps) {
+export function ProfileClient({ profile, email, badgeIds }: ProfileClientProps) {
   const router = useRouter();
   const [displayName, setDisplayName] = useState(profile?.display_name ?? '');
   const [username, setUsername] = useState(profile?.username ?? '');
@@ -52,6 +56,12 @@ export function ProfileClient({ profile, email }: ProfileClientProps) {
 
   return (
     <div className="space-y-4">
+      {/* XP + Level */}
+      <XPBar xp={profile?.xp ?? 0} />
+
+      {/* Badges */}
+      {badgeIds.length > 0 && <BadgesDisplay badgeIds={badgeIds} />}
+
       {/* Avatar */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center">
         <div className="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-3">

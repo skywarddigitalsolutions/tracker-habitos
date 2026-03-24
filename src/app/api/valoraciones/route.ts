@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { awardXP, XP_REWARDS } from '@/lib/gamification/xp';
 
 export async function GET(request: Request) {
   const supabase = await createClient();
@@ -50,5 +51,12 @@ export async function POST(request: Request) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  try {
+    await awardXP(supabase, user.id, XP_REWARDS.DAY_RATING);
+  } catch {
+    // Gamification errors don't break the main action
+  }
+
   return NextResponse.json({ data });
 }

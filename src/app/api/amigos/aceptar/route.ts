@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { awardBadge } from '@/lib/gamification/badges';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -22,6 +23,14 @@ export async function POST(request: Request) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!data) return NextResponse.json({ error: 'Solicitud no encontrada' }, { status: 404 });
+
+  // Award first_friend badge to both users
+  try {
+    await awardBadge(supabase, user.id, 'first_friend');
+    await awardBadge(supabase, data.requester_id, 'first_friend');
+  } catch {
+    // Badge errors don't break the friendship
+  }
 
   return NextResponse.json({ data });
 }

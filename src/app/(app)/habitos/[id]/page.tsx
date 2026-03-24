@@ -4,8 +4,9 @@ import { getLocalDateString, getDaysInMonth } from '@/lib/utils/dates';
 import { HabitCompletionGrid } from '@/components/habitos/HabitCompletionGrid';
 import { CategoryBadge } from '@/components/habitos/CategoryBadge';
 import { ArchiveToggleButton } from '@/components/habitos/ArchiveToggleButton';
+import { VisibilityToggleButton } from '@/components/habitos/VisibilityToggleButton';
 import Link from 'next/link';
-import { ArrowLeft, Globe, Lock } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { MONTHS_ES } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
@@ -82,13 +83,7 @@ export default async function HabitoDetailPage({ params }: Props) {
       {/* Meta info */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         {habit.category_id && <CategoryBadge categoryId={habit.category_id} size="md" />}
-        <div className="flex items-center gap-1 text-xs text-slate-500">
-          {habit.is_public ? (
-            <><Globe size={12} /> Público</>
-          ) : (
-            <><Lock size={12} /> Privado</>
-          )}
-        </div>
+        <VisibilityToggleButton habitId={habit.id} isPublic={habit.is_public} />
         {habit.is_archived && (
           <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full">
             Archivado

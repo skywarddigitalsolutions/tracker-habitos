@@ -29,7 +29,7 @@ export function AppShell({ children, user }: AppShellProps) {
         <main
           id="main-content"
           className="pb-24 md:pb-8"
-          style={{ minHeight: '100dvh' }}
+          style={{ minHeight: '100dvh', paddingTop: 'env(safe-area-inset-top)' }}
           tabIndex={-1}
         >
           {children}

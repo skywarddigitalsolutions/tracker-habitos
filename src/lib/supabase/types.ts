@@ -4,8 +4,35 @@ export type Profile = {
   display_name: string | null;
   avatar_url: string | null;
   timezone: string;
+  xp: number;
+  level: number;
   created_at: string;
   updated_at: string;
+};
+
+export type UserBadge = {
+  id: string;
+  user_id: string;
+  badge_id: string;
+  earned_at: string;
+};
+
+export type Encouragement = {
+  id: string;
+  from_id: string;
+  to_id: string;
+  created_at: string;
+};
+
+export type Challenge = {
+  id: string;
+  created_by: string;
+  invited_user: string;
+  habit_name: string;
+  duration_days: number;
+  status: 'pending' | 'active' | 'completed' | 'cancelled';
+  started_at: string | null;
+  created_at: string;
 };
 
 export type Category = {
@@ -122,6 +149,24 @@ export type Database = {
           updated_at?: string;
         };
         Update: Partial<Omit<Profile, 'id'>>;
+        Relationships: [];
+      };
+      user_badges: {
+        Row: UserBadge;
+        Insert: Omit<UserBadge, 'id' | 'earned_at'> & { id?: string; earned_at?: string };
+        Update: Partial<Omit<UserBadge, 'id'>>;
+        Relationships: [];
+      };
+      encouragements: {
+        Row: Encouragement;
+        Insert: Omit<Encouragement, 'id' | 'created_at'> & { id?: string; created_at?: string };
+        Update: Partial<Omit<Encouragement, 'id'>>;
+        Relationships: [];
+      };
+      challenges: {
+        Row: Challenge;
+        Insert: Omit<Challenge, 'id' | 'created_at' | 'started_at'> & { id?: string; created_at?: string; started_at?: string | null };
+        Update: Partial<Omit<Challenge, 'id'>>;
         Relationships: [];
       };
       categories: {

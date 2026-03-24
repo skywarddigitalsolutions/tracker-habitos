@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { getLocalDateString, formatDateES, getWeekBounds } from '@/lib/utils/dates';
+import { getLocalDateString, formatShortDate, getWeekBounds } from '@/lib/utils/dates';
 import { DashboardClient } from '@/components/dashboard/DashboardClient';
 import { DayRatingForm } from '@/components/dashboard/DayRatingForm';
 import { WeeklyStreak } from '@/components/dashboard/WeeklyStreak';
@@ -20,7 +20,7 @@ export default async function DashboardPage() {
 
   const today = getLocalDateString();
   const todayDate = new Date(today + 'T12:00:00');
-  const formattedDate = formatDateES(todayDate);
+  const formattedDate = formatShortDate(todayDate);
 
   // Fetch habits
   const { data: habits } = await supabase

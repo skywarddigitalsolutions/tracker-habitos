@@ -27,6 +27,24 @@ export function formatDateES(date: Date): string {
   return format(date, "EEEE d 'de' MMMM", { locale: es });
 }
 
+/**
+ * Formatea una fecha como dd/mm o dd/mm/aa.
+ * Si la fecha es del año actual se omite el año.
+ */
+export function formatShortDate(date: Date | string): string {
+  const d =
+    typeof date === 'string'
+      ? new Date(date.includes('T') ? date : date + 'T12:00:00')
+      : date;
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  const currentYear = new Date().getFullYear();
+  return year !== currentYear
+    ? `${day}/${month}/${String(year).slice(-2)}`
+    : `${day}/${month}`;
+}
+
 export function getDaysInMonth(year: number, month: number): Date[] {
   const { start, end } = getMonthBounds(year, month);
   return eachDayOfInterval({ start, end });

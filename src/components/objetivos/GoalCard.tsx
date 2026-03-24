@@ -5,6 +5,7 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { CategoryBadge } from '@/components/habitos/CategoryBadge';
 import type { Goal } from '@/lib/supabase/types';
 import { differenceInDays } from 'date-fns';
+import { formatShortDate } from '@/lib/utils/dates';
 
 const TYPE_LABELS: Record<string, string> = {
   mensual: 'Mensual',
@@ -71,9 +72,9 @@ export function GoalCard({ goal }: GoalCardProps) {
           <div className="flex items-center gap-2">
             {goal.category_id && <CategoryBadge categoryId={goal.category_id} />}
             <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              {new Date(goal.start_date + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}
+              {formatShortDate(goal.start_date)}
               {' → '}
-              {new Date(goal.end_date + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}
+              {formatShortDate(goal.end_date)}
             </span>
           </div>
           <span className={`text-xs font-medium ${daysLeft < 0 ? 'text-red-400' : daysLeft < 7 ? 'text-yellow-400' : 'text-slate-500'}`}>

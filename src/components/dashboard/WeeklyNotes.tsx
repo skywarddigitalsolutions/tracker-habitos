@@ -1,6 +1,7 @@
 'use client';
 
 import { Star, BookOpen } from 'lucide-react';
+import { formatShortDate } from '@/lib/utils/dates';
 
 interface DayNote {
   date: string;
@@ -40,8 +41,11 @@ function StarRow({ rating }: { rating: number }) {
 }
 
 export function WeeklyNotes({ data }: WeeklyNotesProps) {
-  // Only show days that have either a rating or a note
-  const days = data.filter((d) => d.rating !== null || (d.notes && d.notes.trim()));
+  // Only show days that have either a rating or a note, most recent first
+  const days = data
+    .filter((d) => d.rating !== null || (d.notes && d.notes.trim()))
+    .slice()
+    .reverse();
 
   if (days.length === 0) return null;
 
@@ -61,8 +65,7 @@ export function WeeklyNotes({ data }: WeeklyNotesProps) {
         {days.map((day) => {
           const d = new Date(day.date + 'T12:00:00');
           const dayName = DAY_NAMES[d.getDay()];
-          const dayNum = d.getDate();
-          const month = d.toLocaleDateString('es-AR', { month: 'short' });
+          const shortDate = formatShortDate(d);
           const isToday = day.date === new Date().toLocaleDateString('en-CA');
 
           return (
@@ -86,7 +89,7 @@ export function WeeklyNotes({ data }: WeeklyNotesProps) {
                     {isToday ? 'Hoy' : dayName}
                   </span>
                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    {dayNum} {month}
+                    {shortDate}
                   </span>
                 </div>
 

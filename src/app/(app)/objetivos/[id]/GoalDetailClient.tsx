@@ -6,6 +6,7 @@ import { GoalProgressUpdate } from '@/components/objetivos/GoalProgressUpdate';
 import { Button } from '@/components/ui/Button';
 import type { GoalProgressEntry } from '@/lib/supabase/types';
 import { TrendingUp } from 'lucide-react';
+import { formatShortDate } from '@/lib/utils/dates';
 
 interface GoalDetailClientProps {
   goalId: string;
@@ -42,7 +43,7 @@ export function GoalDetailClient({ goalId, currentValue, targetValue, unit, prog
                   )}
                 </div>
                 <span className="text-xs text-slate-500">
-                  {new Date(entry.recorded_at).toLocaleDateString('es-AR')}
+                  {formatShortDate(new Date(entry.recorded_at))}
                 </span>
               </div>
             ))}
